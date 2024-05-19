@@ -5,22 +5,31 @@ let error_detail = require('./functions/error_detail')
 let axios_page = require('./functions/axios_page')
 let download_file = require('./functions/download_file')
 const fs = require('fs');
-let set_url = `https://coomer.su/onlyfans/user/belledelphine`
+require('dotenv').config()
 let set_re_try = 10
 
-let profile_name_arr = String(set_url).split("/")
-
-let profile_name = `${profile_name_arr[profile_name_arr.length - 1]}`
-
-
 // Fungsi utama untuk melakukan scraping dan unduh file
-async function scrapeAndDownload() {
+
+// async function scrapeAndDownload(set_url = `${process.env.SET_URL}`) {
+exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) {
+
+
+
   const urlToScrape = `${set_url} `; // Ganti dengan URL yang ingin di-scrape
+
+  let remove_query_string = String(set_url).split("?")
+  let profile_name_arr = String(remove_query_string[0]).split("/")
+  let profile_name = `${profile_name_arr[profile_name_arr.length - 1]}`
+
 
 
   let generate_id = `${Date.now()} `
   try {
+
     const response = await axios_page.axiosGetWithRetry(urlToScrape, set_re_try, generate_id);
+
+
+
     const $ = cheerio.load(response.data);
 
     const filesToDownload = [];
@@ -70,7 +79,7 @@ async function scrapeAndDownload() {
       fs.mkdirSync(imgDir, { recursive: true });
     }
     if (!fs.existsSync(videoDir)) {
-      fs.mkdirSync(videoDir , { recursive: true });
+      fs.mkdirSync(videoDir, { recursive: true });
     }
 
 
@@ -100,4 +109,4 @@ async function scrapeAndDownload() {
 
 
 // Mulai scraping dan unduh file
-scrapeAndDownload();
+// scrapeAndDownload();

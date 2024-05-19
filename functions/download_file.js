@@ -1,7 +1,7 @@
 const axios = require('axios');
 let error_detail = require('./error_detail')
 const fs = require('fs');
-
+let browser_useragent = require('./browser_useragent')
 // Fungsi untuk mengunduh file dengan retry manual
 exports.downloadFileWithRetry = async function (url, outputLocationPath, retries = 3, id = null) {
     const writer = fs.createWriteStream(outputLocationPath);
@@ -13,6 +13,7 @@ exports.downloadFileWithRetry = async function (url, outputLocationPath, retries
           url,
           method: 'GET',
           responseType: 'stream',
+          headers : browser_useragent.setHeaders()
         });
   
         response.data.pipe(writer);
