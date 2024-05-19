@@ -1,10 +1,13 @@
 https://github.com/coreybutler/nvm-windows/releases
 
 WINDOWS : https://github.com/EKI-INDRADI/install-multi-nodejs-version-windows
+
 LINUX : https://github.com/EKI-INDRADI/install-multi-nodejs-version-linux
 
 PATH :
+
 NVM_HOME C:\NVM_MANUAL\nvm
+
 NVM_SYMLINK C:\NVM_MANUAL\nodejs
 
 ```sh
