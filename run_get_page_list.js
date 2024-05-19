@@ -13,7 +13,6 @@ let set_re_try = 10
 
 
 
-
 async function main(set_url = `${process.env.SET_URL}`) {
 
 
@@ -108,28 +107,80 @@ async function main_process(obj = {}) {
 
 
 
-    console.log({
-      profile_name,
-      post_start,
-      page_active,
-      page_size,
-      total_page,
-      postUrls
-      // postUrlsStatus
-    })
+    // console.log({
+    //   profile_name,
+    //   post_start,
+    //   page_active,
+    //   page_size,
+    //   total_page,
+    //   postUrls
+    //   // postUrlsStatus
+    // })
+
+    if (String(set_url).toLowerCase().includes("?")) {
+
+      console.log(`=== GENERATE PAGE ${profile_name}_${page_active}`)
+
+      await generate_json({
+        profile_name,
+        post_start,
+        page_active,
+        page_size,
+        total_page,
+        postUrls
+        // postUrlsStatus
+      })
+
+    } else {
+
+      //===============================GENERATE_URL
+      console.log(`=== GENERATE PAGE ${profile_name}`)
 
 
-    console.log(`=== GENERATE PAGE ${profile_name}_1`)
+      let generate_array = []
 
-    await generate_json({
-      profile_name,
-      post_start,
-      page_active,
-      page_size,
-      total_page,
-      postUrls
-      // postUrlsStatus
-    })
+
+      for (let i_a; i_a < total_page; i_a++) {
+        if (i_a == 0 ) {
+          generate_array.push(`${set_url}`)
+        } else {
+          generate_array.push(`${set_url}?o=${Number(page_size * i_a) + 1}`)
+        }
+      }
+
+      let jsonDir = path.resolve(__dirname, path.join('DOWNLOAD', obj.profile_name));
+      if (!fs.existsSync(jsonDir)) {
+        fs.mkdirSync(jsonDir, { recursive: true });
+      }
+
+      // Mengubah objek JavaScript menjadi string JSON
+      let jsonString = JSON.stringify(generate_array, null, 2); // null dan 2 untuk membuat JSON lebih terformat
+
+      // Menulis string JSON ke dalam file, menggantikan file jika sudah ada
+      try {
+        fs.writeFileSync(`${jsonDir}/${profile_name}.json`, jsonString, 'utf8');
+        console.log('File berhasil disimpan!');
+      } catch (err) {
+        error_detail.try_catch_error_detail(err)
+        console.error('Gagal menyimpan file', err);
+      }
+      //===============================/GENERATE_URL
+
+
+      console.log(`=== GENERATE PAGE ${profile_name}_1`)
+
+      await generate_json({
+        profile_name,
+        post_start,
+        page_active,
+        page_size,
+        total_page,
+        postUrls
+        // postUrlsStatus
+      })
+
+    }
+
 
     // for (let i_a; i_a < postUrls.length; i_a++) {
     //   await run_scrap_page.scrapeAndDownload(postUrls[i_a])
@@ -148,7 +199,7 @@ async function main_process(obj = {}) {
 
 async function generate_json(obj = {}) {
 
-  
+
   const jsonDir = path.resolve(__dirname, path.join('DOWNLOAD', obj.profile_name));
   if (!fs.existsSync(jsonDir)) {
     fs.mkdirSync(jsonDir, { recursive: true });
