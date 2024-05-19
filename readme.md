@@ -19,5 +19,13 @@ npm install axios cheerio axios-retry fs
 
 
 ```sh
-SET_URL=test.com
+SET_URL=https://xxxxx/xxxx/user/xxxx
+OBJ={"profile_name":"xxxx","post_start":1,"page_active":1,"page_size":50,"total_post":888,"total_page":18}
+
+```
+
+```sh
+node run_get_page_list_1
+node run_get_page_list_2_to_end
+node run_scrap_page
 ```

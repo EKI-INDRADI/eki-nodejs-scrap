@@ -11,8 +11,6 @@ require('dotenv').config()
 let set_re_try = 10
 
 
-
-
 async function main(set_url = `${process.env.SET_URL}`) {
 
 
@@ -22,6 +20,15 @@ async function main(set_url = `${process.env.SET_URL}`) {
     let get_domain = `${profile_name_arr[0]}/${profile_name_arr[1]}/${profile_name_arr[2]}`
     let profile_name = `${profile_name_arr[profile_name_arr.length - 1]}`
 
+  // Membuat direktori jika belum ada
+  const imgDir = path.resolve(__dirname, path.join('DOWNLOAD', profile_name, 'IMG'));
+  const videoDir = path.resolve(__dirname, path.join('DOWNLOAD', profile_name, 'VIDEO'));
+  if (!fs.existsSync(imgDir)) {
+    fs.mkdirSync(imgDir, { recursive: true });
+  }
+  if (!fs.existsSync(videoDir)) {
+    fs.mkdirSync(videoDir, { recursive: true });
+  }
 
 
     let process = await main_process({
@@ -38,6 +45,10 @@ async function main(set_url = `${process.env.SET_URL}`) {
 
 }
 
+
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
 
 async function main_process(obj = {}) {
@@ -65,15 +76,15 @@ async function main_process(obj = {}) {
 
     //===============================POST
 
-    let post_start, page_active, page_size, total_page;
+    let post_start, page_active, page_size, total_post, total_page;
 
     const smallText = $('section.site-section small').text().trim();
     const matches = smallText.match(/Showing (\d+) - (\d+) of (\d+)/);
     if (matches) {
       post_start = parseInt(matches[1], 10);
       page_size = parseInt(matches[2], 10) - parseInt(matches[1], 10) + 1;
-      total_page = parseInt(matches[3], 10);
-
+      total_post = parseInt(matches[3], 10);
+      total_page = Math.ceil(total_post / page_size)
       page_active = Math.ceil(post_start / page_size)
     }
 
@@ -102,6 +113,7 @@ async function main_process(obj = {}) {
     // console.log('post_start', post_start)
     // console.log('page_active:', page_active);
     // console.log('page_size:', page_size);
+    // console.log('total_post:', total_post);
     // console.log('total_page:', total_page);
     // console.log('postUrls:', postUrls);
 
@@ -112,7 +124,7 @@ async function main_process(obj = {}) {
     //   post_start,
     //   page_active,
     //   page_size,
-    //   total_page,
+    //   total_post,
     //   postUrls
     //   // postUrlsStatus
     // })
@@ -126,6 +138,7 @@ async function main_process(obj = {}) {
         post_start,
         page_active,
         page_size,
+        total_post,
         total_page,
         postUrls
         // postUrlsStatus
@@ -140,11 +153,12 @@ async function main_process(obj = {}) {
       let generate_array = []
 
 
-      for (let i_a; i_a < total_page; i_a++) {
-        if (i_a == 0 ) {
+      for (let i_a = 0; i_a < total_page; i_a++) {
+
+        if (i_a == 0) {
           generate_array.push(`${set_url}`)
         } else {
-          generate_array.push(`${set_url}?o=${Number(page_size * i_a) + 1}`)
+          generate_array.push(`${set_url}?o=${Number(page_size * i_a)}`)
         }
       }
 
@@ -154,7 +168,7 @@ async function main_process(obj = {}) {
       }
 
       // Mengubah objek JavaScript menjadi string JSON
-      let jsonString = JSON.stringify(generate_array, null, 2); // null dan 2 untuk membuat JSON lebih terformat
+      let jsonString = JSON.stringify({ page: generate_array }, null, 2); // null dan 2 untuk membuat JSON lebih terformat
 
       // Menulis string JSON ke dalam file, menggantikan file jika sudah ada
       try {
@@ -174,6 +188,7 @@ async function main_process(obj = {}) {
         post_start,
         page_active,
         page_size,
+        total_post,
         total_page,
         postUrls
         // postUrlsStatus
@@ -187,7 +202,15 @@ async function main_process(obj = {}) {
     // }
 
 
+// console.log('await 3 second')
+// await delay(3000)
 
+
+
+//     //==============GENERATE PAGE 2 to END
+
+
+//     //==============GENERATE PAGE 2 to END
 
   } catch (error) {
     error_detail.try_catch_error_detail(error)
@@ -224,8 +247,10 @@ async function generate_json(obj = {}) {
 
 
 
-
 // Mulai scraping dan unduh file
+
+
+
 main();
 
 

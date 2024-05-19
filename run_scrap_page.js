@@ -8,6 +8,9 @@ const fs = require('fs');
 require('dotenv').config()
 let set_re_try = 10
 
+let GET_OBJ_ENV = process.env.OBJ || {}
+try { GET_OBJ_ENV = JSON.parse(GET_OBJ_ENV); } catch (skip_err) { }
+
 // Fungsi utama untuk melakukan scraping dan unduh file
 
 // async function scrapeAndDownload(set_url = `${process.env.SET_URL}`) {
@@ -17,11 +20,11 @@ exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) 
 
   const urlToScrape = `${set_url} `; // Ganti dengan URL yang ingin di-scrape
 
-  let remove_query_string = String(set_url).split("?")
-  let profile_name_arr = String(remove_query_string[0]).split("/")
-  let profile_name = `${profile_name_arr[profile_name_arr.length - 1]}`
+  // let remove_query_string = String(set_url).split("?")
+  // let profile_name_arr = String(remove_query_string[0]).split("/")
+  // let profile_name = `${profile_name_arr[profile_name_arr.length - 1]}`
 
-
+  let profile_name = GET_OBJ_ENV.profile_name
 
   let generate_id = `${Date.now()} `
   try {
@@ -110,3 +113,48 @@ exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) 
 
 // Mulai scraping dan unduh file
 // scrapeAndDownload();
+
+async function delay(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+exports.run = async function () {
+
+
+
+
+  for (let i_a = 1; i_a <= GET_OBJ_ENV.total_page; i_a++) {
+
+    const jsonDir = path.resolve(__dirname, path.join('DOWNLOAD', GET_OBJ_ENV.profile_name));
+
+    let load_json = path.join(`${jsonDir}`, `${GET_OBJ_ENV.profile_name}_${i_a}.json`)
+
+
+
+    try {
+      let data = fs.readFileSync(load_json, 'utf8');
+      let jsonData = JSON.parse(data);
+
+
+      for (let i_b = 1; i_b <= jsonData.postUrls.length; i_b++) {
+
+        await delay(1200)
+
+        console.log(`${jsonData.postUrls[i_b]}`)
+
+        await exports.scrapeAndDownload(`${jsonData.postUrls[i_b]}`)
+
+      }
+    } catch (err) {
+      console.error('Error reading or parsing file:', err);
+    }
+
+
+
+  }
+
+
+}
+
+
+exports.run()
