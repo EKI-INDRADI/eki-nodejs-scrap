@@ -1,0 +1,4 @@
+root: C:\NVM_MANUAL\nvm
+path: C:\NVM_MANUAL\nodejs
+arch: 64
+proxy: none
