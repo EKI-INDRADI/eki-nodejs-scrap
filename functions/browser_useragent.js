@@ -47,7 +47,7 @@ const getRandomUserAgent = () => {
     ];
 
     const randomIndex = Math.floor(Math.random() * userAgents.length);
-    return userAgents[randomIndex] + ` ${Date.now()}` // auto generate
+    return userAgents[randomIndex] + ` ${Date.now()}/${Math.random()}.${Math.random()}.${Math.random()}.${Math.random()}` // auto generate
 };
 
 exports.setHeaders = function () {

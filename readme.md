@@ -27,5 +27,6 @@ OBJ={"profile_name":"xxxx","post_start":1,"page_active":1,"page_size":50,"total_
 ```sh
 node run_get_page_list_1
 node run_get_page_list_2_to_end
+node run_scrap_page_img_only
 node run_scrap_page
 ```

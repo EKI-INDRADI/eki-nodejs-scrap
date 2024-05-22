@@ -38,11 +38,20 @@ exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) 
     const filesToDownload = [];
 
     // Mengambil semua tag img dan video
-    $('img').each((index, element) => {
-      let src = $(element).attr('src');
+    // $('img').each((index, element) => {
+
+
+
+    $('.post__files .post__thumbnail a.fileThumb').each((index, element) => {
+      // let src = $(element).attr('src');
+      // let src = $(element).attr('data-src');
+      let src = $(element).attr('href')
+
       if (src && !src.startsWith('http')) {
         // Menangani URL relatif
-        src = new URL(src, urlToScrape).href;
+        // src = new URL(src, urlToScrape).href;
+        //new URL(src, urlToScrape)
+        src = $(element).attr('href')
       }
       if (src) {
 
@@ -90,6 +99,12 @@ exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) 
     for (const file of filesToDownload) {
 
       const outputDir = file.type === 'image' ? imgDir : videoDir;
+
+      if (String(file.filename).includes(`?f=`) == true) {
+        let filename_arr = String(file.filename).split(`?f=`)
+        file.filename = filename_arr[1]
+      }
+
       const outputPath = path.resolve(outputDir, file.filename);
 
       //========================= LOAD JSON
@@ -122,44 +137,43 @@ exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) 
 
       //========================= LOAD JSON
 
-      if (continue_process ==  1) {
+      if (continue_process == 1) {
 
-        try {
-          await download_file.downloadFileWithRetry(file.url, outputPath, set_re_try, generate_id);
-          // console.error(`${ generate_id } | GET PAGE DOWNLOAD FILE | ${ file.url } | ${ file.filename } | SUCCESS`);
-          console.error(`${generate_id} | GET PAGE DOWNLOAD FILE | ${file.filename} | SUCCESS`);
-  
+        if (outputDir && file.type === 'image') {
           try {
-            data_db.done.push(`${file.filename}`)
-            // Menulis kembali ke file
-            fs.writeFileSync(load_db_path, JSON.stringify(data_db, null, 2), 'utf-8');
-          } catch (skip_err) { }
-  
-        } catch (error) {
-          error_detail.try_catch_error_detail(error)
-          // console.error(`${ generate_id } | GET PAGE DOWNLOAD FILE | ${ file.url } | null | ERROR #1 : ${ error } `);
-          console.error(`${generate_id} | GET PAGE DOWNLOAD FILE | null | ERROR #1 : ${error} `);
-  
-          try {
-            data_db.error.push(`${file.filename}`)
-            // Menulis kembali ke file
-            fs.writeFileSync(load_db_path, JSON.stringify(data_db, null, 2), 'utf-8');
-          } catch (skip_err) { }
-  
+            await download_file.downloadFileWithRetry(file.url, outputPath, set_re_try, generate_id);
+            // console.error(`${ generate_id } | GET PAGE DOWNLOAD FILE | ${ file.url } | ${ file.filename } | SUCCESS`);
+            console.error(`${generate_id} | GET PAGE DOWNLOAD FILE | ${file.filename} | SUCCESS`);
+
+            try {
+              data_db.done.push(`${file.filename}`)
+              // Menulis kembali ke file
+              fs.writeFileSync(load_db_path, JSON.stringify(data_db, null, 2), 'utf-8');
+            } catch (skip_err) { }
+
+          } catch (error) {
+            error_detail.try_catch_error_detail(error)
+            // console.error(`${ generate_id } | GET PAGE DOWNLOAD FILE | ${ file.url } | null | ERROR #1 : ${ error } `);
+            console.error(`${generate_id} | GET PAGE DOWNLOAD FILE | null | ERROR #1 : ${error} `);
+
+            try {
+              data_db.error.push(`${file.filename}`)
+              // Menulis kembali ke file
+              fs.writeFileSync(load_db_path, JSON.stringify(data_db, null, 2), 'utf-8');
+            } catch (skip_err) { }
+
+          }
+        } else {
+          console.log(`${generate_id} | VIDEO SKIP`)
         }
-        
+
       } //end if continue_process
-
-
-
 
     }
   } catch (error) {
     error_detail.try_catch_error_detail(error)
     // console.error(`${ generate_id } | GET PAGE DOWNLOAD FILE | ${ urlToScrape } | null | ERROR #2 : ${ error } `);
     console.error(`${generate_id} | GET PAGE DOWNLOAD FILE | null | ERROR #2 : ${error} `);
-
-
   }
 }
 
