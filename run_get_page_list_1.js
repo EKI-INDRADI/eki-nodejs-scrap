@@ -3,7 +3,7 @@ const cheerio = require('cheerio');
 const path = require('path');
 let error_detail = require('./functions/error_detail')
 let axios_page = require('./functions/axios_page')
-let run_scrap_page = require('./run_scrap_page')
+
 
 const fs = require('fs');
 const process = require('process');
