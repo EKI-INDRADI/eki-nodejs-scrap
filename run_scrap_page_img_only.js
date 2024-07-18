@@ -16,7 +16,10 @@ try { GET_OBJ_ENV = JSON.parse(GET_OBJ_ENV); } catch (skip_err) { }
 // async function scrapeAndDownload(set_url = `${process.env.SET_URL}`) {
 exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) {
 
+  let post_id_arr = String(set_url).split('/')
+  let post_id = post_id_arr[post_id_arr.length - 1]
 
+  // console.log("post_id", post_id)
 
   const urlToScrape = `${set_url} `; // Ganti dengan URL yang ingin di-scrape
 
@@ -105,7 +108,7 @@ exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) 
         file.filename = filename_arr[1]
       }
 
-      const outputPath = path.resolve(outputDir, file.filename);
+      const outputPath = path.resolve(outputDir,`${post_id}_${file.filename}`);
 
       //========================= LOAD JSON
 
@@ -146,7 +149,7 @@ exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) 
             console.error(`${generate_id} | GET PAGE DOWNLOAD FILE | ${file.filename} | SUCCESS`);
 
             try {
-              data_db.done.push(`${file.filename}`)
+              data_db.done.push(`${post_id}/${file.filename}`)
               // Menulis kembali ke file
               fs.writeFileSync(load_db_path, JSON.stringify(data_db, null, 2), 'utf-8');
             } catch (skip_err) { }
@@ -157,7 +160,7 @@ exports.scrapeAndDownload = async function (set_url = `${process.env.SET_URL}`) 
             console.error(`${generate_id} | GET PAGE DOWNLOAD FILE | null | ERROR #1 : ${error} `);
 
             try {
-              data_db.error.push(`${file.filename}`)
+              data_db.error.push(`${post_id}/${file.filename}`)
               // Menulis kembali ke file
               fs.writeFileSync(load_db_path, JSON.stringify(data_db, null, 2), 'utf-8');
             } catch (skip_err) { }
