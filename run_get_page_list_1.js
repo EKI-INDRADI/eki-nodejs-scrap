@@ -20,15 +20,15 @@ async function main(set_url = `${process.env.SET_URL}`) {
     let get_domain = `${profile_name_arr[0]}/${profile_name_arr[1]}/${profile_name_arr[2]}`
     let profile_name = `${profile_name_arr[profile_name_arr.length - 1]}`
 
-  // Membuat direktori jika belum ada
-  const imgDir = path.resolve(__dirname, path.join('DOWNLOAD', profile_name, 'IMG'));
-  const videoDir = path.resolve(__dirname, path.join('DOWNLOAD', profile_name, 'VIDEO'));
-  if (!fs.existsSync(imgDir)) {
-    fs.mkdirSync(imgDir, { recursive: true });
-  }
-  if (!fs.existsSync(videoDir)) {
-    fs.mkdirSync(videoDir, { recursive: true });
-  }
+    // Membuat direktori jika belum ada
+    const imgDir = path.resolve(__dirname, path.join('DOWNLOAD', profile_name, 'IMG'));
+    const videoDir = path.resolve(__dirname, path.join('DOWNLOAD', profile_name, 'VIDEO'));
+    if (!fs.existsSync(imgDir)) {
+      fs.mkdirSync(imgDir, { recursive: true });
+    }
+    if (!fs.existsSync(videoDir)) {
+      fs.mkdirSync(videoDir, { recursive: true });
+    }
 
 
     let process = await main_process({
@@ -101,6 +101,8 @@ async function main_process(obj = {}) {
         generate_url_post = `/fansly/user/${profile_name}/post/${dataId}`
       } else if (String(set_url).toLocaleLowerCase().includes("candfans")) {
         generate_url_post = `/candfans/user/${profile_name}/post/${dataId}`
+      } else if (String(set_url).toLocaleLowerCase().includes("patreon")) {
+        generate_url_post = `/patreon/user/${profile_name}/post/${dataId}`
       }
 
       postUrls.push(`${get_domain}${generate_url_post}`);
@@ -202,15 +204,15 @@ async function main_process(obj = {}) {
     // }
 
 
-// console.log('await 3 second')
-// await delay(3000)
+    // console.log('await 3 second')
+    // await delay(3000)
 
 
 
-//     //==============GENERATE PAGE 2 to END
+    //     //==============GENERATE PAGE 2 to END
 
 
-//     //==============GENERATE PAGE 2 to END
+    //     //==============GENERATE PAGE 2 to END
 
   } catch (error) {
     error_detail.try_catch_error_detail(error)

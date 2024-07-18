@@ -163,6 +163,8 @@ async function main_process(obj = {}, last_number = null) {
                 generate_url_post = `/fansly/user/${profile_name}/post/${dataId}`
             } else if (String(set_url).toLocaleLowerCase().includes("candfans")) {
                 generate_url_post = `/candfans/user/${profile_name}/post/${dataId}`
+            } else if (String(set_url).toLocaleLowerCase().includes("patreon")) {
+                generate_url_post = `/patreon/user/${profile_name}/post/${dataId}`
             }
 
             postUrls.push(`${get_domain}${generate_url_post}`);
